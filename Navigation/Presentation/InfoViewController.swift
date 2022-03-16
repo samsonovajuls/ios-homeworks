@@ -9,14 +9,9 @@ import UIKit
 
 class InfoViewController: UIViewController {
 
-
     private lazy var alertButton: UIButton = {
-
-        let button = UIButton(frame: CGRect(x: (self.view.frame.size.width - 300)/2,
-                                            y: self.view.frame.size.height - 180,
-                                            width: 300,
-                                            height: 50)
-        )
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Показать алерт", for: .normal)
         button.backgroundColor = .systemYellow
         button.setTitleColor(.black, for: .normal)
@@ -29,6 +24,16 @@ class InfoViewController: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = .systemGreen
         self.view.addSubview(self.alertButton)
+
+        let alertButtonHeight = self.alertButton.heightAnchor.constraint(equalToConstant: 50)
+        let alertButtonWidth = self.alertButton.widthAnchor.constraint(equalToConstant: 300)
+        let alertButtonBottom = self.alertButton.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -10)
+        let alertButtonCenterXConstraint = self.alertButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor)
+
+        NSLayoutConstraint.activate([
+            alertButtonHeight, alertButtonWidth, alertButtonBottom, alertButtonCenterXConstraint
+        ].compactMap({ $0 }))
+
     }
 
     @objc private func didTapAlertButton() {
