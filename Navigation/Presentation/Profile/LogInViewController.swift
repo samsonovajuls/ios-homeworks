@@ -25,10 +25,13 @@ class LogInViewController: UIViewController {
     private lazy var textFieldsStackView: UIStackView = {
         let textFieldsStackView = UIStackView()
         textFieldsStackView.translatesAutoresizingMaskIntoConstraints = false
-        textFieldsStackView.clipsToBounds = true
         textFieldsStackView.axis = .vertical
         textFieldsStackView.distribution = .fillEqually
         textFieldsStackView.spacing = 0
+        textFieldsStackView.layer.borderWidth = 0.5
+        textFieldsStackView.layer.borderColor = UIColor.lightGray.cgColor
+        textFieldsStackView.layer.cornerRadius = 10
+        textFieldsStackView.clipsToBounds = true
 
         return textFieldsStackView
     }()
@@ -46,15 +49,12 @@ class LogInViewController: UIViewController {
     private lazy var emailOrPhoneTextField: UITextField = {
         let emailOrPhoneTextField = UITextField()
         emailOrPhoneTextField.translatesAutoresizingMaskIntoConstraints = false
-        emailOrPhoneTextField.layer.borderColor = UIColor.lightGray.cgColor
-        emailOrPhoneTextField.layer.borderWidth = 0.5
-        emailOrPhoneTextField.layer.cornerRadius = 10
+        emailOrPhoneTextField.borderStyle = .none
         emailOrPhoneTextField.backgroundColor = .systemGray6
         emailOrPhoneTextField.textColor = .black
         emailOrPhoneTextField.font = UIFont.systemFont(ofSize: 16)
         emailOrPhoneTextField.autocapitalizationType = .none
         emailOrPhoneTextField.placeholder = "Email or phone"
-        emailOrPhoneTextField.clipsToBounds = true
         emailOrPhoneTextField.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner]
         emailOrPhoneTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: emailOrPhoneTextField.frame.height))
         emailOrPhoneTextField.leftViewMode = .always
@@ -73,7 +73,6 @@ class LogInViewController: UIViewController {
         passwordTextField.autocapitalizationType = .none
         passwordTextField.isSecureTextEntry = true
         passwordTextField.placeholder = "Password"
-        passwordTextField.clipsToBounds = true
         passwordTextField.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         passwordTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: passwordTextField.frame.height))
         passwordTextField.leftViewMode = .always
@@ -140,7 +139,6 @@ class LogInViewController: UIViewController {
         let vkImageViewWidth = self.vkLogoImageView.widthAnchor.constraint(equalToConstant: 100)
 
 
-
         let stackViewTopConstraint = self.stackView.topAnchor.constraint(equalTo: self.vkLogoImageView.bottomAnchor, constant: 120)
         let stackViewCenterXConstraint = self.stackView.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor)
         let stackViewLeadingConstraint = self.stackView.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor, constant: 16)
@@ -192,7 +190,6 @@ class LogInViewController: UIViewController {
     @objc private func didButtonTapped(){
         self.navigationController?.pushViewController(ProfileViewController(), animated: true)
     }
-
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
