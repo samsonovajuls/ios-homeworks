@@ -37,8 +37,7 @@ class ProfileViewController: UIViewController {
             self?.dataSource = posts
             self?.tableView.reloadData()
         }
-
-        self.setupTableView()
+        self.setupView()
         self.tapGesture()
     }
 
@@ -47,13 +46,17 @@ class ProfileViewController: UIViewController {
         self.navigationController?.navigationBar.isHidden = true
     }
 
-    private func setupTableView() {
-        self.view.addSubview(self.tableView)
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        tableView.reloadData()
+    }
 
+    private func setupView() {
+        self.view.addSubview(self.tableView)
         NSLayoutConstraint.activate([
             self.tableView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
-            self.tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            self.tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            self.tableView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
+            self.tableView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
             self.tableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }

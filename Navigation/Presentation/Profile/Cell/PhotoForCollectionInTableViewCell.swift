@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PhotoForTableViewCell: UICollectionViewCell {
+class PhotoForCollectionInTableViewCell: UICollectionViewCell {
 
     var photoImageView: UIImageView = {
         let imageView = UIImageView()
@@ -15,7 +15,6 @@ class PhotoForTableViewCell: UICollectionViewCell {
         imageView.layer.cornerRadius = 6
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.clipsToBounds = true
-
         return imageView
     }()
 
@@ -25,10 +24,10 @@ class PhotoForTableViewCell: UICollectionViewCell {
         self.contentView.addSubview(self.photoImageView)
 
         NSLayoutConstraint.activate([
-            self.photoImageView.topAnchor.constraint(equalTo: self.topAnchor),
-            self.photoImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            self.photoImageView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            self.photoImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+            self.photoImageView.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor),
+            self.photoImageView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor),
+            self.photoImageView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor),
+            self.photoImageView.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
 

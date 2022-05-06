@@ -65,7 +65,7 @@ class PhotosTableViewCell: UITableViewCell {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.dataSource = self
         collectionView.delegate = self
-        collectionView.register(PhotoForTableViewCell.self, forCellWithReuseIdentifier: "PhotoCell")
+        collectionView.register(PhotoForCollectionInTableViewCell.self, forCellWithReuseIdentifier: "PhotoCell")
         return collectionView
     }()
 
@@ -125,6 +125,11 @@ class PhotosTableViewCell: UITableViewCell {
         let itemWidth = floor(needWidth / Constant.itemCount)
         return CGSize(width: itemWidth, height: itemWidth * 0.8)
     }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        self.photoCollectionView.collectionViewLayout.invalidateLayout()
+    }
 }
 
 
@@ -137,7 +142,7 @@ extension PhotosTableViewCell: UICollectionViewDataSource, UICollectionViewDeleg
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoForTableViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCell", for: indexPath) as! PhotoForCollectionInTableViewCell
         let image = self.images[indexPath.item]
         cell.photoImageView.image = image
         return cell

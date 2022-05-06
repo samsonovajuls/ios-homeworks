@@ -127,63 +127,40 @@ class LogInViewController: UIViewController {
         self.textFieldsStackView.addArrangedSubview(self.emailOrPhoneTextField)
         self.textFieldsStackView.addArrangedSubview(self.passwordTextField)
 
-
-        let scrollViewTopConstraint = self.scrollView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor)
-        let scrollViewTrailingConstraint = self.scrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor)
-        let scrollViewLeadingConstraint = self.scrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor)
-        let scrollViewBottomConstraint = self.scrollView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
-
-        let vkImageViewTopConstraint = self.vkLogoImageView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 120)
-        let vkImageViewCenterXConstraint = self.vkLogoImageView.centerXAnchor.constraint(equalTo: self.scrollView.safeAreaLayoutGuide.centerXAnchor)
-        let vkImageViewHeight = self.vkLogoImageView.heightAnchor.constraint(equalToConstant: 100)
-        let vkImageViewWidth = self.vkLogoImageView.widthAnchor.constraint(equalToConstant: 100)
-
-
-        let stackViewTopConstraint = self.stackView.topAnchor.constraint(equalTo: self.vkLogoImageView.bottomAnchor, constant: 120)
-        let stackViewCenterXConstraint = self.stackView.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor)
-        let stackViewLeadingConstraint = self.stackView.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor, constant: 16)
-        let stackViewTrailingConstraint = self.stackView.trailingAnchor.constraint(equalTo: self.scrollView.trailingAnchor, constant: -16)
-        let stackViewBottomConstraint = self.stackView.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor)
-
-
-        let textFieldsTopConstraint = self.textFieldsStackView.topAnchor.constraint(equalTo: self.stackView.topAnchor)
-        let textFieldsTrailingConstraint = self.textFieldsStackView.trailingAnchor.constraint(equalTo: self.stackView.trailingAnchor)
-        let textFieldsLeadingConstraint = self.textFieldsStackView.leadingAnchor.constraint(equalTo: self.stackView.leadingAnchor)
-        let textFieldsStackViewHeightConstraint = self.textFieldsStackView.heightAnchor.constraint(equalToConstant: 100)
-
-        let loginButtonHeightConstraint = self.loginButton.heightAnchor.constraint(equalToConstant: 50)
-        let loginButtonTrailingConstraint = self.loginButton.trailingAnchor.constraint(equalTo: self.stackView.trailingAnchor)
-        let loginButtonLeadingConstraint = self.loginButton.leadingAnchor.constraint(equalTo: self.stackView.leadingAnchor)
-
+        NSLayoutConstraint.activate([
+            self.scrollView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            self.scrollView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
+            self.scrollView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
+            self.scrollView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
+        ])
 
         NSLayoutConstraint.activate([
+            self.vkLogoImageView.topAnchor.constraint(equalTo: self.scrollView.topAnchor, constant: 120),
+            self.vkLogoImageView.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor),
+            self.vkLogoImageView.heightAnchor.constraint(equalToConstant: 100),
+            self.vkLogoImageView.widthAnchor.constraint(equalToConstant: 100)
+        ])
 
-            scrollViewTopConstraint,
-            scrollViewTrailingConstraint,
-            scrollViewLeadingConstraint,
-            scrollViewBottomConstraint,
+            NSLayoutConstraint.activate([
+                self.stackView.topAnchor.constraint(equalTo: self.vkLogoImageView.bottomAnchor, constant: 120),
+                self.stackView.centerXAnchor.constraint(equalTo: self.scrollView.centerXAnchor),
+                self.stackView.leadingAnchor.constraint(equalTo: self.scrollView.leadingAnchor, constant: 16),
+                self.stackView.trailingAnchor.constraint(equalTo: self.scrollView.trailingAnchor, constant: -16),
+                self.stackView.bottomAnchor.constraint(equalTo: self.scrollView.bottomAnchor)
+            ])
 
-            vkImageViewTopConstraint,
-            vkImageViewCenterXConstraint,
-            vkImageViewWidth,
-            vkImageViewHeight,
+            NSLayoutConstraint.activate([
+                self.textFieldsStackView.topAnchor.constraint(equalTo: self.stackView.topAnchor),
+                self.textFieldsStackView.trailingAnchor.constraint(equalTo: self.stackView.trailingAnchor),
+                self.textFieldsStackView.leadingAnchor.constraint(equalTo: self.stackView.leadingAnchor),
+                self.textFieldsStackView.heightAnchor.constraint(equalToConstant: 100)
+            ])
 
-            stackViewTopConstraint,
-            stackViewCenterXConstraint,
-            stackViewLeadingConstraint,
-            stackViewTrailingConstraint,
-            stackViewBottomConstraint,
-
-            textFieldsTopConstraint,
-            textFieldsTrailingConstraint,
-            textFieldsLeadingConstraint,
-            textFieldsStackViewHeightConstraint,
-
-            loginButtonHeightConstraint,
-            loginButtonTrailingConstraint,
-            loginButtonLeadingConstraint
-
-        ].compactMap({ $0 }))
+            NSLayoutConstraint.activate([
+                self.loginButton.heightAnchor.constraint(equalToConstant: 50),
+                self.loginButton.trailingAnchor.constraint(equalTo: self.stackView.trailingAnchor),
+                self.loginButton.leadingAnchor.constraint(equalTo: self.stackView.leadingAnchor)
+            ])
 
     }
 

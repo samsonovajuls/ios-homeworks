@@ -158,15 +158,14 @@ final class PostTableViewCell: UITableViewCell {
 }
 
 extension PostTableViewCell: Setupable {
-    
+
     func setup(with viewModel: ViewModelProtocol) {
         guard let viewModel = viewModel as? ViewModel else { return }
-
+        
         self.authorLabel.text = viewModel.author
         self.postImageView.image = UIImage(named: viewModel.image)
         self.descriptionLabel.text = viewModel.description
         self.likesLabel.text? += String(viewModel.likes)
         self.viewsLabel.text? += String(viewModel.views)
-
     }
 }
