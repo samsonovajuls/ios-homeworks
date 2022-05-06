@@ -7,56 +7,63 @@
 
 import UIKit
 
-
-
 class ProfileViewController: UIViewController {
 
-    private lazy var profileHeaderView: ProfileHeaderView = {
-        let view = ProfileHeaderView(frame: .zero)
-        view.delegate = self
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    } ()
+    private lazy var tableView: UITableView = {
 
+        let tableView = UITableView(frame: .zero, style: .grouped)
+        tableView.backgroundColor = .systemGray6
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "DefaultCell")
+        tableView.register(PostTableViewCell.self, forCellReuseIdentifier: "PostCell")
+        tableView.register(PhotosTableViewCell.self, forCellReuseIdentifier: "PhotosCell")
+        tableView.sectionFooterHeight = 10
+        return tableView
+    }()
 
-    private lazy var secondButton: UIButton = {
-        let secondButton = UIButton()
-        secondButton.translatesAutoresizingMaskIntoConstraints = false
-        secondButton.setTitle("Button without action", for: .normal)
-        secondButton.titleLabel?.textColor = .white
-        secondButton.backgroundColor = UIColor.systemBlue
-        return secondButton
-    } ()
+    private lazy var jsonDecoder: JSONDecoder = {
+        return JSONDecoder()
+    }()
 
-    private var profileHeaderViewHeightConstraint: NSLayoutConstraint?
+    private var dataSource: [News.Post] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white
-        self.navigationItem.title = "Профиль"
-        self.navigationController?.navigationBar.prefersLargeTitles = true
 
-        self.view.addSubview(self.profileHeaderView)
-        self.view.addSubview(self.secondButton)
-        self.profileHeaderView.backgroundColor = .lightGray
+        self.fetchPosts { [weak self] posts in
+            self?.dataSource = posts
+            self?.tableView.reloadData()
+        }
+        self.setupView()
+        self.tapGesture()
+    }
 
-        let profileHeaderViewTopConstraint = self.profileHeaderView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0)
-        let profileHeaderViewLeadingConstraint = self.profileHeaderView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0)
-        let profileHeaderViewTrailingConstraint = self.profileHeaderView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0)
-        self.profileHeaderViewHeightConstraint = self.profileHeaderView.heightAnchor.constraint (equalToConstant: 220)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.isHidden = true
+    }
 
-        let secondButtonLeadingConstraint = self.secondButton.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0)
-        let secondButtonTrailingConstraint = self.secondButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0)
-        let secondButtonBottomConstraint = self.secondButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
-        let secondButtonHeight = self.secondButton.heightAnchor.constraint(equalToConstant: 50)
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        tableView.reloadData()
+    }
 
+    private func setupView() {
+        self.view.addSubview(self.tableView)
         NSLayoutConstraint.activate([
-            profileHeaderViewTopConstraint, profileHeaderViewLeadingConstraint, profileHeaderViewTrailingConstraint, self.profileHeaderViewHeightConstraint,
-            secondButtonLeadingConstraint, secondButtonTrailingConstraint, secondButtonBottomConstraint, secondButtonHeight
-        ].compactMap({ $0 }))
+            self.tableView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            self.tableView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
+            self.tableView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor),
+            self.tableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+    }
 
-
+    func tapGesture() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
     }
 
@@ -64,19 +71,80 @@ class ProfileViewController: UIViewController {
         view.endEditing(true)
     }
 
-}
-
-extension ProfileViewController: ProfileHeaderViewProtocol {
-
-    func didTapStatusButton(textFieldIsVisible: Bool, completion: @escaping () -> Void) {
-        self.profileHeaderViewHeightConstraint?.constant = textFieldIsVisible ? 270 : 220
-
-        UIView.animate(withDuration: 0.3, delay: 0.0) {
-            self.view.layoutIfNeeded()
-        } completion: { _ in
-            completion()
+    private func fetchPosts(completion: @escaping ([News.Post]) -> Void) {
+        if let path = Bundle.main.path(forResource: "news", ofType: "json") {
+            do {
+                let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .alwaysMapped)
+                let news = try self.jsonDecoder.decode(News.self, from: data)
+                completion(news.posts)
+            } catch let error {
+                print("parse error: \(error.localizedDescription)")
+            }
+        } else {
+            fatalError("Invalid filename/path.")
         }
     }
 }
 
+extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
 
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return 1
+        } else {
+            return self.dataSource.count
+        }
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section == 0 {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "PhotosCell", for: indexPath) as? PhotosTableViewCell else {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "DefaultCell", for: indexPath)
+                return cell
+            }
+            cell.photosTableViewCellDelegate = self
+            return cell
+
+        } else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "PostCell", for: indexPath) as? PostTableViewCell else {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "DefaultCell", for: indexPath)
+                return cell
+            }
+
+            let post = self.dataSource[indexPath.row]
+            let viewModel = PostTableViewCell.ViewModel(author: post.author, description: post.description, image: post.image, likes: post.likes, views: post.views)
+
+            cell.setup(with: viewModel)
+            return cell
+        }
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        if section == 0 {
+            return ProfileHeaderView(frame: .zero)
+        }
+        return nil
+    }
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        section == 0 ? 250 : 0
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 0 {
+            let photoVC = PhotosViewController()
+            self.navigationController?.pushViewController(photoVC, animated: true)
+        }
+    }
+}
+
+extension ProfileViewController: PhotosTableViewCellDelegate {
+    func didSelectItem() {
+        let photoVC = PhotosViewController()
+        self.navigationController?.pushViewController(photoVC, animated: true)
+    }
+}
