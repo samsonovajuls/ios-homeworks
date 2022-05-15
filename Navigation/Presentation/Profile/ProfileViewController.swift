@@ -10,7 +10,6 @@ import UIKit
 class ProfileViewController: UIViewController {
 
     private lazy var tableView: UITableView = {
-
         let tableView = UITableView(frame: .zero, style: .grouped)
         tableView.backgroundColor = .systemGray6
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -27,7 +26,7 @@ class ProfileViewController: UIViewController {
         return JSONDecoder()
     }()
 
-    private var dataSource: [News.Post] = []
+    private var dataSource: [Posts.Post] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,6 +48,7 @@ class ProfileViewController: UIViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         tableView.reloadData()
+        tableView.dequeueReusableCell(withIdentifier: "PhotosCell")
     }
 
     private func setupView() {
@@ -71,12 +71,12 @@ class ProfileViewController: UIViewController {
         view.endEditing(true)
     }
 
-    private func fetchPosts(completion: @escaping ([News.Post]) -> Void) {
-        if let path = Bundle.main.path(forResource: "news", ofType: "json") {
+    private func fetchPosts(completion: @escaping ([Posts.Post]) -> Void) {
+        if let path = Bundle.main.path(forResource: "posts", ofType: "json") {
             do {
                 let data = try Data(contentsOf: URL(fileURLWithPath: path), options: .alwaysMapped)
-                let news = try self.jsonDecoder.decode(News.self, from: data)
-                completion(news.posts)
+                let posts = try self.jsonDecoder.decode(Posts.self, from: data)
+                completion(posts.posts)
             } catch let error {
                 print("parse error: \(error.localizedDescription)")
             }
@@ -108,7 +108,6 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             }
             cell.photosTableViewCellDelegate = self
             return cell
-
         } else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "PostCell", for: indexPath) as? PostTableViewCell else {
                 let cell = tableView.dequeueReusableCell(withIdentifier: "DefaultCell", for: indexPath)
@@ -117,7 +116,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
 
             let post = self.dataSource[indexPath.row]
             let viewModel = PostTableViewCell.ViewModel(author: post.author, description: post.description, image: post.image, likes: post.likes, views: post.views)
-
+            cell.postTableViewCellDelegate = self
             cell.setup(with: viewModel)
             return cell
         }
@@ -140,6 +139,25 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
             self.navigationController?.pushViewController(photoVC, animated: true)
         }
     }
+
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        if indexPath.section == 0 {
+            return .none
+        } else {
+            return .delete
+        }
+    }
+
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            self.dataSource.remove(at: indexPath.row)
+            self.tableView.reloadSections([0,1], with: .fade)
+        }
+    }
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        UITableView.automaticDimension
+    }
 }
 
 extension ProfileViewController: PhotosTableViewCellDelegate {
@@ -148,3 +166,38 @@ extension ProfileViewController: PhotosTableViewCellDelegate {
         self.navigationController?.pushViewController(photoVC, animated: true)
     }
 }
+
+extension ProfileViewController: PostTableViewCellDelegate {
+    func showPostDetail(cell: PostTableViewCell) {
+
+        guard let index = self.tableView.indexPath(for: cell)?.row else { return }
+        let indexPath = IndexPath(row: index, section: 1)
+        self.dataSource[indexPath.row].views += 1
+
+        let detailedPostView = PostView()
+        self.view.addSubview(detailedPostView)
+        detailedPostView.translatesAutoresizingMaskIntoConstraints = false
+
+        let post = self.dataSource[indexPath.row]
+        let viewModel = PostView.ViewModel(
+            author: post.author, description: post.description, image: post.image, likes: post.likes, views: post.views)
+        detailedPostView.setup(with: viewModel)
+
+        NSLayoutConstraint.activate([
+            detailedPostView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            detailedPostView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            detailedPostView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            detailedPostView.topAnchor.constraint(equalTo: view.topAnchor)
+        ])
+
+        self.tableView.reloadRows(at: [indexPath], with: .none)
+    }
+
+    func increaseLikes(cell: PostTableViewCell) {
+        guard let index = self.tableView.indexPath(for: cell)?.row else { return }
+        let indexPath = IndexPath(row: index, section: 1)
+        self.dataSource[indexPath.row].likes += 1
+        self.tableView.reloadRows(at: [indexPath], with: .none)
+    }
+}
+

@@ -177,6 +177,7 @@ final class ProfileHeaderView: UIView {
         ])
         self.transparentBackgroundView.center = CGPoint(x: UIScreen.main.bounds.midX, y: UIScreen.main.bounds.midY)
 
+        // выносим аватарку на передний план, чтобы можно было сделать анимацию(увеличение)
         self.avatarImageView.layer.zPosition = 1
 
         // крестик для закрытия большой аватарки
@@ -272,7 +273,13 @@ final class ProfileHeaderView: UIView {
 
     @objc private func didTapStatusButton() {
         print("Прошлое значение статуса было - \(statusLabel.text ?? ""), новое - \(statusText)")
-        statusLabel.text = statusText
+
+        if statusText.isEmpty {
+            statusTextField.backgroundColor = UIColor(named: "lightPinkColor")
+        } else {
+            statusLabel.text = statusText
+            statusTextField.backgroundColor = .white
+        }
     }
 
     @objc func statusTextChanged(_ textField: UITextField) {

@@ -8,7 +8,7 @@
 import UIKit
 
 class PhotosViewController: UIViewController {
-
+    
     var images = [UIImage]()
     
     private lazy var photosCollection: UICollectionView = {
@@ -21,23 +21,23 @@ class PhotosViewController: UIViewController {
         collection.backgroundColor = .white
         return collection
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
         fixTabAndNavForIOS15 (color: view.backgroundColor)
         self.drawSelf()
-
+        
         for i in 1...20 {
             if let image = UIImage(named: "mult\(i)") {
                 images.append(image)
             }
         }
     }
-
+    
     private func drawSelf(){
         view.addSubview(photosCollection)
-
+        
         NSLayoutConstraint.activate([
             self.photosCollection.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
             self.photosCollection.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
@@ -45,7 +45,7 @@ class PhotosViewController: UIViewController {
             self.photosCollection.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.navigationBar.isHidden = false
@@ -53,7 +53,7 @@ class PhotosViewController: UIViewController {
         self.navigationItem.backButtonTitle = "Back"
         self.navigationItem.title = "Photo Gallery"
     }
-
+    
     func fixTabAndNavForIOS15(color: UIColor?) {
         if #available(iOS 15.0, *) {
             let navBarAppearance = UINavigationBarAppearance()
@@ -61,7 +61,7 @@ class PhotosViewController: UIViewController {
             navBarAppearance.backgroundColor = color
             navigationController?.navigationBar.standardAppearance = navBarAppearance
             navigationController?.navigationBar.scrollEdgeAppearance = navBarAppearance
-
+            
             let tabBarAppearance = UITabBarAppearance()
             tabBarAppearance.configureWithOpaqueBackground()
             tabBarAppearance.backgroundColor = color
@@ -72,34 +72,65 @@ class PhotosViewController: UIViewController {
 }
 
 extension PhotosViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
-
+    
     private var sideInset: CGFloat { return 8 }
-
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return images.count
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotosCollectionViewCell", for: indexPath) as! PhotosCollectionViewCell
         let image = images[indexPath.item]
         cell.setup(with: image)
         return cell
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = (collectionView.bounds.width - sideInset * 4) / 3
         return CGSize(width: width, height: width)
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-         return UIEdgeInsets(top: sideInset, left: sideInset, bottom: sideInset, right: sideInset)
-     }
-
+        return UIEdgeInsets(top: sideInset, left: sideInset, bottom: sideInset, right: sideInset)
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         sideInset
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         sideInset
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let photoView = PhotoView()
+        photoView.photoViewDelegate = self
+        photoView.photoImageView.image = images[indexPath.item]
+        self.view.addSubview(photoView)
+        NSLayoutConstraint.activate([
+            photoView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            photoView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            photoView.topAnchor.constraint(equalTo: view.topAnchor),
+            photoView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+        navigationController?.navigationBar.isHidden = true
+        tabBarController?.tabBar.isHidden = true
+        UIView.animate(withDuration: 0.1, animations: {
+            self.view.layoutIfNeeded()
+        }) { _ in
+            UIView.animate(withDuration: 0.3) {
+                photoView.backgroundColor = .black.withAlphaComponent(0.8)
+            }
+        }
+    }
+}
+
+extension PhotosViewController: PhotoViewDelegate {
+    func closePhotoView(view: PhotoView) {
+        view.removeFromSuperview()
+        navigationController?.navigationBar.isHidden = false
+        tabBarController?.tabBar.isHidden = false
     }
 }

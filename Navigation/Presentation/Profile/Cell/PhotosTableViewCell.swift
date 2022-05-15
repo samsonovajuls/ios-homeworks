@@ -13,17 +13,6 @@ class PhotosTableViewCell: UITableViewCell {
 
     weak var photosTableViewCellDelegate: PhotosTableViewCellDelegate?
 
-    private enum Constant {
-        static let itemCount: CGFloat = 4
-    }
-
-    private lazy var backView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .white
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -53,14 +42,9 @@ class PhotosTableViewCell: UITableViewCell {
         return imageView
     }()
 
-    private lazy var layout: UICollectionViewFlowLayout = {
+    private lazy var photoCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = 8
-        return layout
-    }()
-
-    private lazy var photoCollectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.dataSource = self
@@ -79,25 +63,17 @@ class PhotosTableViewCell: UITableViewCell {
     }
 
     private func setupView() {
-        
-        self.backgroundColor = .systemGray6
-        self.contentView.addSubview(self.backView)
-        self.backView.addSubview(self.stackView)
+        self.contentView.backgroundColor = .white
+
+        self.contentView.addSubview(self.stackView)
         self.stackView.addArrangedSubview(self.photosLabel)
         self.stackView.addArrangedSubview(self.arrowImage)
-        self.backView.addSubview(photoCollectionView)
+        self.contentView.addSubview(self.photoCollectionView)
 
         NSLayoutConstraint.activate([
-            self.backView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
-            self.backView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor),
-            self.backView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor),
-            self.backView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor)
-        ])
-
-        NSLayoutConstraint.activate([
-            self.stackView.topAnchor.constraint(equalTo: self.backView.topAnchor, constant: 12),
-            self.stackView.leadingAnchor.constraint(equalTo: self.backView.leadingAnchor, constant: 12),
-            self.stackView.trailingAnchor.constraint(equalTo: self.backView.trailingAnchor, constant: -12),
+            self.stackView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 12),
+            self.stackView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 12),
+            self.stackView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -12),
         ])
 
         NSLayoutConstraint.activate([
@@ -107,23 +83,17 @@ class PhotosTableViewCell: UITableViewCell {
 
         NSLayoutConstraint.activate([
             self.photoCollectionView.topAnchor.constraint(equalTo: self.stackView.bottomAnchor),
-            self.photoCollectionView.leadingAnchor.constraint(equalTo: self.backView.leadingAnchor, constant: 12),
-            self.photoCollectionView.trailingAnchor.constraint(equalTo: self.backView.trailingAnchor, constant: -12),
-            self.photoCollectionView.bottomAnchor.constraint(equalTo: self.backView.bottomAnchor),
+            self.photoCollectionView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 4),
+            self.photoCollectionView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -4),
+            self.photoCollectionView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
             self.photoCollectionView.heightAnchor.constraint(equalTo: self.contentView.widthAnchor, multiplier: 0.25)
         ])
 
-        for i in 1...20 {
+        for i in 1...4 {
             if let image = UIImage(named: "mult\(i)") {
                 self.images.append(image)
             }
         }
-    }
-
-    func itemSize(for width: CGFloat, with spacing: CGFloat) -> CGSize { // размеры ячейки
-        let needWidth = width - 4 * spacing
-        let itemWidth = floor(needWidth / Constant.itemCount)
-        return CGSize(width: itemWidth, height: itemWidth * 0.8)
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -135,10 +105,12 @@ class PhotosTableViewCell: UITableViewCell {
 
 extension PhotosTableViewCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
+
+    private var sideInset: CGFloat { return 8 }
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // это чтобы показать все картинки с горизонтальным скролом, а не только первые 4 (как по заданию)
-        // return self.images.count
-          return 4
+        //return self.images.count // - это чтобы показать все картинки с горизонтальным скролом, а не только первые 4 (как по заданию). Только в этом случае еще надо добавить в images не 4, а все 20 картинок
+        return 4
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -149,12 +121,24 @@ extension PhotosTableViewCell: UICollectionViewDataSource, UICollectionViewDeleg
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let spacing = (collectionView.collectionViewLayout as? UICollectionViewFlowLayout)?.minimumInteritemSpacing
-        return self.itemSize(for: collectionView.frame.width, with: spacing ?? 0)
+        let width = (collectionView.bounds.width - sideInset * 5) / 4
+        return CGSize(width: width, height: width * 0.8)
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         photosTableViewCellDelegate?.didSelectItem()
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return sideInset
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 12, left: sideInset, bottom: 12, right: sideInset)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        sideInset
     }
 }
 

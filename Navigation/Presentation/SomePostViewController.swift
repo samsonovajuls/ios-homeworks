@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PostViewController: UIViewController {
+class SomePostViewController: UIViewController {
 
     var post: SomePost? = nil
     

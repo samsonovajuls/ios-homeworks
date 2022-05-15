@@ -1,12 +1,12 @@
 import Foundation
 
-struct News: Decodable {
+struct Posts: Decodable {
     struct Post: Decodable {
         let author: String      //никнейм автора публикации
         let description: String //текст публикации
         let image: String       //имя картинки из каталога Assets.xcassets
-        let likes: Int          //количество лайков
-        let views: Int          //количество просмотров
+        var likes: Int          //количество лайков
+        var views: Int          //количество просмотров
 
         enum CodingKeys: String, CodingKey {
             case author, description, image, likes, views
