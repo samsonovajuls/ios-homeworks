@@ -7,9 +7,9 @@
 
 import UIKit
 
-class PostViewController: UIViewController {
+class SomePostViewController: UIViewController {
 
-    var post: Post? = nil
+    var post: SomePost? = nil
     
     override func viewDidLoad() {
 

@@ -1,0 +1,31 @@
+{
+    "posts": [{
+            "author": "Ikace",
+            "description": "Журналисты из бруклинского проекта The Pudding разработали модель, которая предсказывает победителя премииОскар за работе. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+            "image": "1",
+            "likes": 200,
+            "views": 500
+        },
+        {
+            "author": "AnnieBronson",
+            "description": "В Казахстане на площадке Международного финансового центра Астана запустят пилотный проект по работе криптобирж. Проект будет реализован вместе с казахстанскими банками и госорганами, в его рамках криптобиржи получат право открывать банковские счета.",
+            "image": "2",
+            "likes": 213,
+            "views": 944
+        },
+        {
+            "author": "daniilshat",
+            "description": "Вчера, 31 марта 2022 года, Apple выпустила обновления безопасности для iOS, macOS и watchOS. Компания была вынуждена сделать это для того, чтобы закрыть критическую уязвимость нулевого дня на iPhone и исправить ошибки в работе macOS.",
+            "image": "3",
+            "likes": 77,
+            "views": 998
+        },
+        {
+            "author": "Журналисты издания Appleinsider заметили, что Apple",
+            "description": "Журналисты издания Appleinsider заметили, что Apple подала патентную заявку на технологию крепления геймпада к iPhone с помощью магнитов. В документе компания подчеркивает, что технологию можно использовать и для других аксессуаров.",
+            "image": "4",
+            "likes": 90,
+            "views": 779
+        },
+    ]
+}

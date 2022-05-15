@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct Post {
+struct SomePost {
     var title: String
 }
 
@@ -74,8 +74,8 @@ class FeedViewController: UIViewController {
     }
 
     @objc private func didTapButton(){
-        let postViewController = PostViewController()
-        postViewController.post = Post(title: "Пост 1")
+        let postViewController = SomePostViewController()
+        postViewController.post = SomePost(title: "Пост 1")
         self.navigationController?.pushViewController(postViewController, animated: true)
     }
 
